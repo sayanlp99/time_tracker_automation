@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/webhook",
+      "methods": ["POST"],
+      "dest": "/index.js"
+    },
+    {
+      "src": "/heartbeat",
+      "methods": ["GET"],
+      "dest": "/index.js"
+    }
+  ]
+}

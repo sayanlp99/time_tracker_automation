@@ -8,7 +8,16 @@ const PORT = 3000;
 const DATABASE_URL = process.env["DATABASE_URL"];
 const AUTH_TOKEN = process.env["AUTH_TOKEN"];
 
-const sequelize = new Sequelize(DATABASE_URL);
+const sequelize = new Sequelize(DATABASE_URL, {
+    dialect: 'postgres',
+    protocol: 'postgres',
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false
+        }
+    }
+});
 
 const EventLog = sequelize.define(
     "EventLog",

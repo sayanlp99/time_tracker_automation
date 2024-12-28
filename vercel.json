@@ -17,5 +17,6 @@
       "methods": ["GET"],
       "dest": "/api/index.js"
     }
-  ]
+  ],
+  "buildCommand": "npm install"
 }

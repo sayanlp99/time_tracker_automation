@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const { Sequelize, DataTypes } = require("sequelize");
+const { Pool } = require("pg");
 require("dotenv").config();
 
 const app = express();
@@ -8,51 +8,20 @@ const PORT = 3000;
 const DATABASE_URL = process.env["DATABASE_URL"];
 const AUTH_TOKEN = process.env["AUTH_TOKEN"];
 
-const sequelize = new Sequelize(DATABASE_URL, {
-    dialect: 'postgres',
-    protocol: 'postgres',
-    dialectOptions: {
-        ssl: {
-            require: true,
-            rejectUnauthorized: false
-        }
-    }
+const pool = new Pool({
+    connectionString: DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false,
+    },
 });
 
-const EventLog = sequelize.define(
-    "EventLog",
-    {
-        event: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        timestamp: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-    },
-    {
-        tableName: "event_logs",
-        timestamps: false,
-    },
-);
-
-sequelize
-    .authenticate()
+pool
+    .connect()
     .then(() => {
         console.log("Database connected successfully");
     })
     .catch((err) => {
         console.error("Unable to connect to the database:", err);
-    });
-
-sequelize
-    .sync({ alter: true })
-    .then(() => {
-        console.log("All models were synchronized successfully.");
-    })
-    .catch((err) => {
-        console.error("Error synchronizing models:", err);
     });
 
 app.use(bodyParser.json());
@@ -68,10 +37,11 @@ app.post("/webhook", async (req, res) => {
     }
 
     try {
-        await EventLog.create({
-            event: req.body.event,
-            timestamp: req.body.timestamp,
-        });
+        const query = `INSERT INTO event_logs (event, timestamp) VALUES ($1, $2)`;
+        const values = [req.body.event, req.body.timestamp];
+
+        await pool.query(query, values);
+
         res.status(200).send({
             message: "Webhook data received and saved successfully",
         });

@@ -10,12 +10,12 @@
     {
       "src": "/webhook",
       "methods": ["POST"],
-      "dest": "/api/index.js"
+      "dest": "api/index.js"
     },
     {
       "src": "/heartbeat",
       "methods": ["GET"],
-      "dest": "/api/index.js"
+      "dest": "api/index.js"
     }
   ],
   "buildCommand": "npm install"

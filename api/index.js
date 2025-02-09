@@ -92,7 +92,7 @@ app.get("/normalize", async (req, res) => {
         }
 
         res.status(200).send({
-            message: "Under development",
+            message: "Data normalized",
         });
     } catch (error) {
         console.error("Error normalizing data");

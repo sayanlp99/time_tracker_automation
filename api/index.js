@@ -63,10 +63,33 @@ app.get("/normalize", async (req, res) => {
     }
 
     try {
-        // const query = `INSERT INTO event_logs (event, timestamp) VALUES ($1, $2)`;
-        // const values = [req.body.event, req.body.timestamp];
+        const getEntriesExitsQuery = `
+            SELECT 
+                DATE(timestamp) AS event_date,
+                MIN(timestamp) FILTER (WHERE event = 'enter') AS first_entry,
+                MAX(timestamp) FILTER (WHERE event = 'exit') AS last_exit
+            FROM events_table
+            WHERE timestamp >= NOW()::date - INTERVAL '1 day'
+                AND timestamp < NOW()::date
+            GROUP BY event_date;
+        `;
 
-        // await pool.query(query, values);
+        const { rows } = await pool.query(getEntriesExitsQuery);
+
+        for (const row of rows) {
+            const { event_date, first_entry, last_exit } = row;
+
+            const deleteIntermediateQuery = `
+                DELETE FROM events_table
+                WHERE DATE(timestamp) = $1
+                AND event IN ('enter', 'exit')
+                AND timestamp NOT IN ($2, $3);
+            `;
+
+            const deleteValues = [event_date, first_entry, last_exit];
+
+            await pool.query(deleteIntermediateQuery, deleteValues);
+        }
 
         res.status(200).send({
             message: "Under development",

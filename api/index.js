@@ -15,8 +15,7 @@ const pool = new Pool({
     },
 });
 
-pool
-    .connect()
+pool.connect()
     .then(() => {
         console.log("Database connected successfully");
     })
@@ -49,6 +48,33 @@ app.post("/webhook", async (req, res) => {
         console.error("Error saving data:", error);
         res.status(500).send({
             message: "Error saving webhook data",
+        });
+    }
+});
+
+app.get("/normalize", async (req, res) => {
+    console.log("Starting Data Normalization");
+
+    if (req.query.token !== AUTH_TOKEN) {
+        console.error("Invalid token in request");
+        return res.status(401).send({
+            message: "Unauthorized request",
+        });
+    }
+
+    try {
+        // const query = `INSERT INTO event_logs (event, timestamp) VALUES ($1, $2)`;
+        // const values = [req.body.event, req.body.timestamp];
+
+        // await pool.query(query, values);
+
+        res.status(200).send({
+            message: "Under development",
+        });
+    } catch (error) {
+        console.error("Error normalizing data");
+        res.status(500).send({
+            message: "Error normalizing data",
         });
     }
 });

@@ -16,6 +16,11 @@
       "src": "/heartbeat",
       "methods": ["GET"],
       "dest": "api/index.js"
+    },
+    {
+      "src": "/normalize",
+      "methods": ["GET"],
+      "dest": "api/index.js"
     }
   ],
   "buildCommand": "npm install"

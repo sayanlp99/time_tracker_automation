@@ -68,7 +68,7 @@ app.get("/normalize", async (req, res) => {
                 DATE(timestamp) AS event_date,
                 MIN(timestamp) FILTER (WHERE event = 'enter') AS first_entry,
                 MAX(timestamp) FILTER (WHERE event = 'exit') AS last_exit
-            FROM events_table
+            FROM event_logs
             WHERE timestamp >= NOW()::date - INTERVAL '1 day'
                 AND timestamp < NOW()::date
             GROUP BY event_date;
@@ -80,7 +80,7 @@ app.get("/normalize", async (req, res) => {
             const { event_date, first_entry, last_exit } = row;
 
             const deleteIntermediateQuery = `
-                DELETE FROM events_table
+                DELETE FROM event_logs
                 WHERE DATE(timestamp) = $1
                 AND event IN ('enter', 'exit')
                 AND timestamp NOT IN ($2, $3);

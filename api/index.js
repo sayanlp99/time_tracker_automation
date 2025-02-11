@@ -65,12 +65,12 @@ app.get("/normalize", async (req, res) => {
     try {
         const getEntriesExitsQuery = `
             SELECT 
-                DATE(timestamp) AS event_date,
-                MIN(timestamp) FILTER (WHERE event = 'enter') AS first_entry,
-                MAX(timestamp) FILTER (WHERE event = 'exit') AS last_exit
-            FROM event_logs
-            WHERE timestamp >= NOW()::date - INTERVAL '1 day'
-                AND timestamp < NOW()::date
+                DATE(TO_TIMESTAMP(timestamp, 'Dy, DD Mon YYYY HH24:MI:SS TZ')) AS event_date,
+                MIN(TO_TIMESTAMP(timestamp, 'Dy, DD Mon YYYY HH24:MI:SS TZ')) FILTER (WHERE event = 'enter') AS first_entry,
+                MAX(TO_TIMESTAMP(timestamp, 'Dy, DD Mon YYYY HH24:MI:SS TZ')) FILTER (WHERE event = 'exit') AS last_exit
+            FROM events_table
+            WHERE TO_TIMESTAMP(timestamp, 'Dy, DD Mon YYYY HH24:MI:SS TZ') >= NOW()::date - INTERVAL '1 day'
+                AND TO_TIMESTAMP(timestamp, 'Dy, DD Mon YYYY HH24:MI:SS TZ') < NOW()::date
             GROUP BY event_date;
         `;
 

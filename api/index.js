@@ -76,6 +76,8 @@ app.get("/normalize", async (req, res) => {
 
         const { rows } = await pool.query(getEntriesExitsQuery);
 
+        console.log(rows);
+
         for (const row of rows) {
             const { event_date, first_entry, last_exit } = row;
 
